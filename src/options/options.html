@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="uk">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Air Alerts in Bookmarks — Settings</title>
+    <link rel="stylesheet" href="options.css" />
+  </head>
+  <body>
+    <main>
+      <section>
+        <h1 data-i18n="languageHeading"></h1>
+        <select id="language" class="control">
+          <option value="uk">Українська</option>
+          <option value="en">English</option>
+        </select>
+      </section>
+
+      <section>
+        <h1 data-i18n="regionsHeading"></h1>
+        <p class="hint" data-i18n="regionsHint"></p>
+        <ul id="watches" class="watches"></ul>
+        <button type="button" id="add" class="ghost" data-i18n="add"></button>
+      </section>
+
+      <section>
+        <h1 data-i18n="wordingHeading"></h1>
+        <p class="hint" data-i18n="wordingHint"></p>
+        <label class="field">
+          <span data-i18n="alertField"></span>
+          <input type="text" id="template-alert" class="control" />
+        </label>
+        <label class="field">
+          <span data-i18n="clearField"></span>
+          <input type="text" id="template-clear" class="control" />
+        </label>
+        <label class="field">
+          <span data-i18n="unknownField"></span>
+          <input type="text" id="template-unknown" class="control" />
+        </label>
+      </section>
+
+      <section>
+        <h1 data-i18n="intervalHeading"></h1>
+        <label class="row">
+          <input type="number" id="interval" class="control number" />
+          <span data-i18n="intervalUnit"></span>
+        </label>
+        <p class="hint" data-i18n="intervalHint"></p>
+      </section>
+
+      <section>
+        <h1 data-i18n="previewHeading"></h1>
+        <ul id="preview" class="preview"></ul>
+        <p class="hint" data-i18n="previewHint"></p>
+      </section>
+
+      <footer>
+        <button
+          type="button"
+          id="reset"
+          class="ghost"
+          data-i18n="restore"
+        ></button>
+        <span
+          class="status"
+          id="status"
+          role="status"
+          aria-live="polite"
+        ></span>
+      </footer>
+
+      <p class="hint" id="source-note"></p>
+    </main>
+
+    <script type="module" src="options.js"></script>
+  </body>
+</html>
