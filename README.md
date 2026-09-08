@@ -30,8 +30,14 @@ browsers do not show.
 
 ## Using it
 
-On first run it adds one bookmark for Kyiv. Open the options page —
-`about:addons` → this extension → _Preferences_ — to change what it watches:
+On first run it adds one bookmark for Kyiv.
+
+If you cannot see it, the bookmarks toolbar is probably hidden — Firefox shows
+it only on new tabs by default. Right-click the toolbar area → _Bookmarks
+Toolbar_ → _Always Show_.
+
+Open the options page — `about:addons` → this extension → _Preferences_ — to
+change what it watches:
 
 - **Regions.** Up to ten, each its own bookmark. Alerts are announced by
   region, so pick the region your city is in.
