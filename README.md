@@ -1,9 +1,16 @@
+<img width="912" height="402" alt="202" src="https://github.com/user-attachments/assets/ab7e7274-90ca-4206-9003-8c829c1bd9b6" />
+
+## Install
+
+https://addons.mozilla.org/en-US/firefox/addon/air-alerts-in-bookmarks/
+
+
 # Air Alerts in Bookmarks
 
 Ukrainian air raid alerts, on your bookmarks toolbar.
 
 ```
-Київ — ТРИВОГА    Луцьк — тихо    Львів — тихо
+Київ — ТРИВОГА
 ```
 
 One bookmark per region, renamed in the background. No tab to keep open, no
@@ -11,22 +18,6 @@ map to check — the answer is already on screen.
 
 Firefox, desktop only.
 
-## Install
-
-Not on addons.mozilla.org yet. Until then, build it yourself:
-
-```bash
-npm ci
-npm run build          # writes dist/firefox/
-npm start              # opens a scratch Firefox with the extension loaded
-npm run package        # writes artifacts/firefox/*.zip
-```
-
-To load the source without packaging: `about:debugging#/runtime/this-firefox` →
-_Load Temporary Add-on_ → pick `dist/firefox/manifest.json`. Gone on restart.
-
-Desktop only: the extension writes to the bookmarks toolbar, which mobile
-browsers do not show.
 
 ## Using it
 
