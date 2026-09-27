@@ -4,7 +4,6 @@
 
 https://addons.mozilla.org/en-US/firefox/addon/air-alerts-in-bookmarks/
 
-
 # Air Alerts in Bookmarks
 
 Ukrainian air raid alerts, on your bookmarks toolbar.
@@ -17,7 +16,6 @@ One bookmark per region, renamed in the background. No tab to keep open, no
 map to check — the answer is already on screen.
 
 Firefox, desktop only.
-
 
 ## Using it
 
