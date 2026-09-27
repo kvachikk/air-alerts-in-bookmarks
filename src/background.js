@@ -16,7 +16,7 @@
 
 import { browser } from './lib/browser.js';
 import { bookmarksBarId } from './lib/bookmarks-bar.js';
-import { fetchSnapshot, statusOf, STATUS } from './lib/source.js';
+import { fetchSnapshot, isAlert, statusOf, STATUS } from './lib/source.js';
 import { DEFAULT_SETTINGS, normalizeSettings } from './lib/settings.js';
 import { formatTitle, labelOf } from './lib/title.js';
 
@@ -40,6 +40,7 @@ const STALE_AFTER_MS = 10 * 60000;
 const MIN_FETCH_GAP_MS = 15000;
 
 const BADGE_ALERT = '#c0392b';
+const BADGE_YELLOW = '#d4a017';
 const BADGE_CLEAR = '#2d6a4f';
 const BADGE_UNKNOWN = '#7f8c8d';
 
@@ -138,7 +139,7 @@ const paintBadge = (settings, alerts, error) => {
     status: statusOf(alerts, watch.region),
   }));
 
-  const alerting = statuses.filter((entry) => entry.status === STATUS.ALERT);
+  const alerting = statuses.filter((entry) => isAlert(entry.status));
   const unknown = statuses.some((entry) => entry.status === STATUS.UNKNOWN);
 
   if (error && unknown) {
@@ -146,12 +147,28 @@ const paintBadge = (settings, alerts, error) => {
     return;
   }
 
-  const names = alerting.map((entry) => entry.label).join(', ');
-  const summary = alerting.length ? `Alert: ${names}` : 'No alerts watched';
   const stale = error ? ' (last known)' : '';
+  const namesAt = (status) =>
+    alerting
+      .filter((entry) => entry.status === status)
+      .map((entry) => entry.label)
+      .join(', ');
+
+  // Merged, the badge says only "alert", the same as the bookmarks do.
+  const summary = settings.mergeLevels
+    ? `Alert: ${alerting.map((entry) => entry.label).join(', ')}`
+    : [
+        ['Red', namesAt(STATUS.RED)],
+        ['Yellow', namesAt(STATUS.YELLOW)],
+      ]
+        .filter(([, names]) => names)
+        .map(([level, names]) => `${level}: ${names}`)
+        .join('; ');
+  const anyRed = alerting.some((entry) => entry.status === STATUS.RED);
+  const color = settings.mergeLevels || anyRed ? BADGE_ALERT : BADGE_YELLOW;
 
   if (alerting.length) {
-    setBadge(String(alerting.length), BADGE_ALERT, summary + stale);
+    setBadge(String(alerting.length), color, summary + stale);
   } else {
     setBadge('', BADGE_CLEAR, `All clear${stale}`);
   }

@@ -43,8 +43,12 @@ change what it watches:
   region, so pick the region your city is in.
 - **The name on each bookmark.** Empty means the region's own name; type
   anything you like instead — `Луцьк` rather than `Волинська область`.
+- **Yellow and red, merged or apart.** Merged by default: either level reads
+  `ТРИВОГА`. Switch it off and the bookmark says `ЖОВТА` for a yellow alert —
+  a threat, such as drones heading that way — and `ЧЕРВОНА` for a red one.
 - **The wording.** `{name} — ТРИВОГА`, `{name} — тихо`, `{name} — ?` by
-  default. Write your own: `{name} — тривожно`, `{name}: 🔴`, whatever reads
+  default, plus `{name} — ЖОВТА` and `{name} — ЧЕРВОНА` when the levels are
+  apart. Write your own: `{name} — тривожно`, `{name}: 🔴`, whatever reads
   fastest to you.
 - **Language**, Ukrainian or English. It switches the options page, the
   default region names, and the default wording. Wording you edited yourself
@@ -69,9 +73,17 @@ from spending the source's rate limit.
 
 ## Where the data comes from
 
-`GET https://ubilling.net.ua/aerialalerts/` — a free public JSON feed with no
-key and no account, run by [Ubilling](https://ubilling.net.ua/). It reports 24
-oblasts plus Kyiv and Sevastopol, and caches for about a minute.
+`GET https://siren.pp.ua/api/v3/alerts` — a free public JSON feed with no key
+and no account, run by [UA Siren](https://siren.pp.ua/) on top of the official
+ukrainealarm data. It lists every oblast, district and community currently
+under alert, with the alert's level: yellow or red.
+
+A bookmark takes the strongest air-raid level anywhere in its region, so one
+district on red makes its whole oblast read red. Which oblast each district
+and community lies in ships with the extension in `src/lib/subregions.js`,
+generated from the source's region tree by `node tools/subregions.mjs`, so a
+tick still costs the source one request. Sevastopol follows Crimea, which is
+how the source reports it.
 
 The request is sent with `credentials: 'omit'`, so no cookie goes with it and
 the source cannot tell one user from another.
@@ -82,9 +94,7 @@ back to the unknown wording — `Київ — ?` — rather than showing a stale
 fails: the last answer stands in for up to ten minutes, and after that the
 bookmarks say they do not know.
 
-Alerts are per region, not per city. A finer breakdown needs an API key from an
-official provider, which a later version may add; `src/lib/source.js` is the
-only file that would change.
+Bookmarks are per region, not per city, even though the feed itself is finer.
 
 **This is not a warning system.** It is a convenience. Use the official
 channels — sirens, the Air Alert app, your local administration — to decide

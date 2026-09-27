@@ -15,9 +15,9 @@ server, no account, and no operator to send anything to.
 
 One request, on the interval you chose, whatever number of bookmarks you keep:
 
-| Request                                     | Why                                              |
-| ------------------------------------------- | ------------------------------------------------ |
-| `GET https://ubilling.net.ua/aerialalerts/` | Read the alert status of every Ukrainian region. |
+| Request                                 | Why                                              |
+| --------------------------------------- | ------------------------------------------------ |
+| `GET https://siren.pp.ua/api/v3/alerts` | Read the alert status of every Ukrainian region. |
 
 It is sent with `credentials: 'omit'`, so no cookie, token or header
 identifying you goes with it. The request body is empty; nothing about you,
@@ -25,14 +25,15 @@ your bookmarks or your settings is sent. Which regions you watch never leaves
 the device, because the feed is asked for all of them at once regardless.
 
 No other host is ever contacted — the extension holds a host permission for
-`https://ubilling.net.ua/*` and nothing else, so it is not technically able to
+`https://siren.pp.ua/*` and nothing else, so it is not technically able to
 reach one.
 
 ## What is stored
 
 On your device, through the WebExtension `storage.local` API:
 
-- Your settings — regions, names, wording, language and refresh interval.
+- Your settings — regions, names, wording, whether yellow and red alerts are
+  merged, language and refresh interval.
 - The id of each bookmark the extension created, so it renames those and never
   touches another.
 - The last answer from the feed, so a failed refresh does not immediately blank
@@ -44,12 +45,12 @@ stored.
 
 ## Permissions
 
-| Permission                  | Why                                                                                       |
-| --------------------------- | ----------------------------------------------------------------------------------------- |
-| `bookmarks`                 | Create and rename its own bookmarks. No bookmark it did not create is read or changed.    |
-| `alarms`                    | Wake up on the interval you chose. Firefox event pages cannot hold a timer any other way. |
-| `storage`                   | Remember the settings and ids above, on your device.                                      |
-| `https://ubilling.net.ua/*` | Read the alert feed. This is the only host the extension may contact.                     |
+| Permission              | Why                                                                                       |
+| ----------------------- | ----------------------------------------------------------------------------------------- |
+| `bookmarks`             | Create and rename its own bookmarks. No bookmark it did not create is read or changed.    |
+| `alarms`                | Wake up on the interval you chose. Firefox event pages cannot hold a timer any other way. |
+| `storage`               | Remember the settings and ids above, on your device.                                      |
+| `https://siren.pp.ua/*` | Read the alert feed. This is the only host the extension may contact.                     |
 
 There is no content script, so the extension runs on no web page at all.
 
@@ -75,7 +76,7 @@ absent from the permissions above, so the extension itself cannot contact it.
 
 ## Third parties
 
-The alert feed is operated by [Ubilling](https://ubilling.net.ua/), who see
+The alert feed is operated by [UA Siren](https://siren.pp.ua/), who see
 what any web server sees of an anonymous request: an IP address and the time.
 Nothing is sent that identifies you or says which regions you watch.
 

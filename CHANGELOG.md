@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased][unreleased]
 
+### Added
+
+- Yellow and red alerts. A switch on the options page, on by default, merges
+  them into one `ТРИВОГА`; switched off, a bookmark reads `ЖОВТА` or
+  `ЧЕРВОНА`, each with wording of its own, and a toolbar badge covering only
+  yellow alerts turns yellow.
+
+### Changed
+
+- The alert feed is now [UA Siren](https://siren.pp.ua/) (`siren.pp.ua`)
+  rather than Ubilling, whose feed has no alert levels and read a yellow alert
+  as no alert at all. It is still one keyless request per tick, and still the
+  only host the extension may contact.
+- A district or community under alert now counts towards its oblast, which
+  takes the strongest level found anywhere inside it.
+
 ## [1.0.0][] - 2026-09-08
 
 First release. Firefox only.

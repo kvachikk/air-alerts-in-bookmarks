@@ -8,6 +8,7 @@ import {
   MAX_WATCHES,
   firstUnwatchedRegion,
   normalizeSettings,
+  wordingsInUse,
 } from '../../src/lib/settings.js';
 
 test('an absent or unusable settings object becomes the defaults', () => {
@@ -84,6 +85,35 @@ test('empty wording falls back to the default for that language', () => {
   assert.equal(templates.uk.alert, DEFAULT_TEMPLATES.uk.alert);
   assert.equal(templates.uk.clear, 'тихо');
   assert.deepEqual(templates.en, DEFAULT_TEMPLATES.en);
+});
+
+test('yellow and red are merged unless the user says otherwise', () => {
+  assert.equal(normalizeSettings({}).mergeLevels, true);
+  assert.equal(normalizeSettings({ mergeLevels: false }).mergeLevels, false);
+  assert.equal(normalizeSettings({ mergeLevels: 'no' }).mergeLevels, true);
+});
+
+test('only the wordings a bookmark can show are in use', () => {
+  assert.deepEqual(wordingsInUse({ mergeLevels: true }), [
+    'alert',
+    'clear',
+    'unknown',
+  ]);
+  assert.deepEqual(wordingsInUse({ mergeLevels: false }), [
+    'red',
+    'yellow',
+    'clear',
+    'unknown',
+  ]);
+});
+
+test('wording stored before the levels were split gains the new ones', () => {
+  const { templates } = normalizeSettings({
+    templates: { uk: { alert: 'А', clear: 'Т', unknown: '?' } },
+  });
+  assert.equal(templates.uk.alert, 'А');
+  assert.equal(templates.uk.red, DEFAULT_TEMPLATES.uk.red);
+  assert.equal(templates.uk.yellow, DEFAULT_TEMPLATES.uk.yellow);
 });
 
 test('firstUnwatchedRegion skips what is already on the list', () => {

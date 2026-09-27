@@ -16,7 +16,7 @@
   },
 
   "permissions": ["bookmarks", "alarms", "storage"],
-  "host_permissions": ["https://ubilling.net.ua/*"],
+  "host_permissions": ["https://siren.pp.ua/*"],
 
   "background": {
     "scripts": ["background.js"],

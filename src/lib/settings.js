@@ -16,14 +16,24 @@ export const LANGUAGES = ['uk', 'en'];
 /** `{name}` is replaced with the bookmark's label. */
 export const NAME_PLACEHOLDER = '{name}';
 
+/** The one wording both alert levels share while they are merged. */
+export const ALERT = 'alert';
+
+/** Every wording the user can edit: the merged one and one per status. */
+export const WORDINGS = [ALERT, ...Object.values(STATUS)];
+
 export const DEFAULT_TEMPLATES = {
   uk: {
-    [STATUS.ALERT]: '{name} — ТРИВОГА',
+    [ALERT]: '{name} — ТРИВОГА',
+    [STATUS.RED]: '{name} — ЧЕРВОНА',
+    [STATUS.YELLOW]: '{name} — ЖОВТА',
     [STATUS.CLEAR]: '{name} — тихо',
     [STATUS.UNKNOWN]: '{name} — ?',
   },
   en: {
-    [STATUS.ALERT]: '{name} — ALERT',
+    [ALERT]: '{name} — ALERT',
+    [STATUS.RED]: '{name} — RED',
+    [STATUS.YELLOW]: '{name} — YELLOW',
     [STATUS.CLEAR]: '{name} — clear',
     [STATUS.UNKNOWN]: '{name} — ?',
   },
@@ -43,6 +53,9 @@ export const DEFAULT_REGION = 'kyiv-city';
 export const DEFAULT_SETTINGS = {
   language: 'uk',
   intervalMinutes: 1,
+  // Yellow and red both read as one plain "alert" until the user asks to
+  // tell them apart.
+  mergeLevels: true,
   watches: [{ id: 'kyiv-city-default', region: DEFAULT_REGION, label: '' }],
   templates: DEFAULT_TEMPLATES,
 };
@@ -91,11 +104,11 @@ const normalizeTemplates = (value) => {
     const defaults = DEFAULT_TEMPLATES[language];
     const stored = value?.[language];
     templates[language] = {};
-    for (const status of Object.values(STATUS)) {
-      templates[language][status] = text(
-        stored?.[status],
+    for (const wording of WORDINGS) {
+      templates[language][wording] = text(
+        stored?.[wording],
         MAX_TEMPLATE_LENGTH,
-        defaults[status],
+        defaults[wording],
       );
     }
   }
@@ -115,10 +128,20 @@ export const normalizeSettings = (stored) => {
       MAX_INTERVAL_MINUTES,
       DEFAULT_SETTINGS.intervalMinutes,
     ),
+    mergeLevels:
+      typeof source.mergeLevels === 'boolean'
+        ? source.mergeLevels
+        : DEFAULT_SETTINGS.mergeLevels,
     watches: normalizeWatches(source.watches),
     templates: normalizeTemplates(source.templates),
   };
 };
+
+/** The wordings a bookmark can currently show, in the order they are listed. */
+export const wordingsInUse = (settings) =>
+  settings.mergeLevels
+    ? [ALERT, STATUS.CLEAR, STATUS.UNKNOWN]
+    : [STATUS.RED, STATUS.YELLOW, STATUS.CLEAR, STATUS.UNKNOWN];
 
 /** The region a freshly added row starts on: the first one not yet watched. */
 export const firstUnwatchedRegion = (watches) => {

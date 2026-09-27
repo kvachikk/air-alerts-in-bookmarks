@@ -14,43 +14,68 @@
  */
 
 import { REGIONS } from './regions.js';
+import { SUBREGIONS } from './subregions.js';
 
-export const SOURCE_URL = 'https://ubilling.net.ua/aerialalerts/';
+export const SOURCE_URL = 'https://siren.pp.ua/api/v3/alerts';
 
-export const SOURCE_NAME = 'Ubilling Aerial Alerts';
+export const SOURCE_NAME = 'UA Siren';
 
 export const STATUS = {
-  ALERT: 'alert',
+  RED: 'red',
+  YELLOW: 'yellow',
   CLEAR: 'clear',
   UNKNOWN: 'unknown',
 };
 
+/** The source's own names for the two alert levels, weakest first. */
+const LEVELS = { Yellow: STATUS.YELLOW, Red: STATUS.RED };
+
+const RANK = [STATUS.CLEAR, STATUS.YELLOW, STATUS.RED];
+
+const stronger = (a, b) => (RANK.indexOf(a) >= RANK.indexOf(b) ? a : b);
+
+/** The region each source id — oblast, district or community — lies in. */
+const OWNER = new Map(
+  REGIONS.flatMap((region) => {
+    const ids = [Number(region.sourceId), ...SUBREGIONS[region.id]];
+    return ids.map((id) => [id, region.id]);
+  }),
+);
+
 /**
- * Turns the source payload into `{ regionId: boolean }`.
+ * Turns the source payload into `{ regionId: 'red' | 'yellow' | 'clear' }`.
  *
- * Regions the table does not know are dropped, and a region whose flag is not
- * a boolean is left out rather than guessed at, so it reads as unknown.
- *
- * The payload also carries a `changed` timestamp per region. It is not used:
- * most regions report the Unix epoch there, so it cannot be shown as "how
- * long the alert has lasted" without being wrong most of the time.
+ * The feed lists only the places under alert, each as its own entry: an
+ * oblast as a whole, or just a district or a community inside it. A region
+ * takes the strongest air-raid level found anywhere inside it, and a region
+ * that nothing mentions is clear. Artillery and street-fighting warnings are
+ * not air raids and are left out.
  */
 export const parseSnapshot = (payload) => {
-  const states = payload?.states;
-  if (!states || typeof states !== 'object') {
+  if (!Array.isArray(payload)) {
     throw new Error('Alert source returned no regions');
   }
 
-  const alerts = {};
-  for (const region of REGIONS) {
-    const state = states[region.key];
-    if (typeof state?.alertnow === 'boolean') {
-      alerts[region.id] = state.alertnow;
+  const alerts = Object.fromEntries(
+    REGIONS.map((region) => [region.id, STATUS.CLEAR]),
+  );
+  for (const entry of payload) {
+    if (!Array.isArray(entry?.activeAlerts)) {
+      throw new Error('Alert source returned an entry it cannot read');
     }
-  }
-
-  if (Object.keys(alerts).length === 0) {
-    throw new Error('Alert source returned no region this build knows');
+    const owner = OWNER.get(Number(entry.regionId));
+    if (!owner) continue;
+    for (const alert of entry.activeAlerts) {
+      if (alert?.type !== 'AIR') continue;
+      // An air raid with no level, or one this build does not know, is still
+      // an air raid, and red is the reading that errs on the safe side.
+      const levels = (alert.activeAlertLevels ?? []).map(
+        (entry) => LEVELS[entry?.alertLevel] ?? STATUS.RED,
+      );
+      for (const level of levels.length ? levels : [STATUS.RED]) {
+        alerts[owner] = stronger(alerts[owner], level);
+      }
+    }
   }
   return alerts;
 };
@@ -70,6 +95,8 @@ export const fetchSnapshot = async (request = fetch) => {
 
 export const statusOf = (alerts, regionId) => {
   const value = alerts?.[regionId];
-  if (typeof value !== 'boolean') return STATUS.UNKNOWN;
-  return value ? STATUS.ALERT : STATUS.CLEAR;
+  return RANK.includes(value) ? value : STATUS.UNKNOWN;
 };
+
+export const isAlert = (status) =>
+  status === STATUS.RED || status === STATUS.YELLOW;

@@ -14,13 +14,16 @@ import assert from 'node:assert/strict';
 
 import { createFakeBrowser } from './fake-browser.js';
 
-const FEED = {
-  states: {
-    'м. Київ': { alertnow: true },
-    'Волинська область': { alertnow: false },
-    'Львівська область': { alertnow: false },
-  },
-};
+/** Kyiv on red, Odesa on yellow; Volyn and Lviv, being absent, are clear. */
+const air = (regionId, alertLevel) => ({
+  regionId,
+  regionType: 'State',
+  activeAlerts: [
+    { regionId, type: 'AIR', activeAlertLevels: [{ alertLevel }] },
+  ],
+});
+
+const FEED = [air('31', 'Red'), air('18', 'Yellow')];
 
 const WATCHES = [
   { id: 'w1', region: 'kyiv-city', label: '' },
@@ -136,4 +139,29 @@ test('English renders both the name and the wording', async () => {
     watches: [{ id: 'w1', region: 'kyiv-city', label: '' }],
   });
   assert.deepEqual(fake.titles(), ['Kyiv — ALERT']);
+});
+
+test('split levels name each one, and yellow gets its own badge', async () => {
+  await run({
+    mergeLevels: false,
+    watches: [WATCHES[0], { id: 'w4', region: 'odesa', label: '' }],
+  });
+  assert.deepEqual(fake.titles(), ['Київ — ЧЕРВОНА', 'Одеса — ЖОВТА']);
+  assert.equal(fake.badge.text, '2');
+  assert.equal(fake.badge.title, 'Red: Київ; Yellow: Одеса');
+});
+
+test('merged levels read the same, yellow included', async () => {
+  await run({ watches: [{ id: 'w4', region: 'odesa', label: '' }] });
+  assert.deepEqual(fake.titles(), ['Одеса — ТРИВОГА']);
+  assert.equal(fake.badge.title, 'Alert: Одеса');
+  assert.equal(fake.badge.color, '#c0392b');
+});
+
+test('split, a yellow-only badge is not painted red', async () => {
+  await run({
+    mergeLevels: false,
+    watches: [{ id: 'w4', region: 'odesa', label: '' }],
+  });
+  assert.equal(fake.badge.color, '#d4a017');
 });

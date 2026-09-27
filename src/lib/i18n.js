@@ -24,7 +24,13 @@ export const STRINGS = {
 
     wordingHeading: 'Текст закладки',
     wordingHint: '{name} буде замінено назвою з попереднього блоку.',
+    mergeLevels: 'Об’єднувати жовту й червону тривогу',
+    mergeHint:
+      'Увімкнено — будь-яка тривога показується як «ТРИВОГА». ' +
+      'Вимкнено — окремо «ЖОВТА» (загроза) і «ЧЕРВОНА».',
     alertField: 'Тривога',
+    redField: 'Червона тривога',
+    yellowField: 'Жовта тривога',
     clearField: 'Тривоги немає',
     unknownField: 'Немає даних',
 
@@ -35,7 +41,7 @@ export const STRINGS = {
       'Менше однієї хвилини браузер усе одно не дозволить.',
 
     previewHeading: 'Як це виглядатиме',
-    previewHint: 'Три можливі стани для кожної закладки.',
+    previewHint: 'Можливі стани для кожної закладки.',
 
     restore: 'Повернути типові',
     saved: 'Збережено',
@@ -60,7 +66,13 @@ export const STRINGS = {
 
     wordingHeading: 'Bookmark wording',
     wordingHint: '{name} is replaced with the name from the block above.',
+    mergeLevels: 'Merge yellow and red alerts',
+    mergeHint:
+      'On — either level reads as a plain "ALERT". ' +
+      'Off — "YELLOW" (a threat) and "RED" are told apart.',
     alertField: 'Alert',
+    redField: 'Red alert',
+    yellowField: 'Yellow alert',
     clearField: 'No alert',
     unknownField: 'No data',
 
@@ -71,7 +83,7 @@ export const STRINGS = {
       'Browsers clamp anything below one minute.',
 
     previewHeading: 'How it will look',
-    previewHint: 'The three states each bookmark can show.',
+    previewHint: 'The states each bookmark can show.',
 
     restore: 'Restore defaults',
     saved: 'Saved',

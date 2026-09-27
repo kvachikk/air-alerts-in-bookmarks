@@ -17,7 +17,7 @@ const SCANNED_EXTENSIONS = ['.js', '.html', '.css'];
 const MANIFESTS = [{ path: 'src/manifest.firefox.json', gecko: true }];
 
 /** The one origin this extension is allowed to contact. */
-const ALLOWED_ORIGIN = 'https://ubilling.net.ua';
+const ALLOWED_ORIGIN = 'https://siren.pp.ua';
 
 /**
  * URLs that may appear in source without being a request at runtime.

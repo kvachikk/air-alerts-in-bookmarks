@@ -5,6 +5,7 @@
   --line: #d7d7db;
   --accent: #2d6a4f;
   --alert: #c0392b;
+  --warn: #9a6b00;
   --surface: #f7f7f8;
 }
 
@@ -16,6 +17,7 @@
     --line: #3a3944;
     --accent: #74c69d;
     --alert: #ff8a80;
+    --warn: #ffd166;
     --surface: #26252d;
   }
 }
@@ -113,6 +115,10 @@ h1 {
   align-items: center;
 }
 
+.field[hidden] {
+  display: none;
+}
+
 .row {
   display: flex;
   gap: 8px;
@@ -142,9 +148,15 @@ h1 {
   white-space: nowrap;
 }
 
-.chip.alert {
+.chip.alert,
+.chip.red {
   color: var(--alert);
   border-color: var(--alert);
+}
+
+.chip.yellow {
+  color: var(--warn);
+  border-color: var(--warn);
 }
 
 .chip.unknown {

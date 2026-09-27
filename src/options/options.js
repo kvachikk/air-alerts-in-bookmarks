@@ -1,6 +1,6 @@
 import { browser } from '../lib/browser.js';
 import { REGIONS, regionName, regionShortName } from '../lib/regions.js';
-import { SOURCE_NAME, SOURCE_URL, STATUS } from '../lib/source.js';
+import { SOURCE_NAME, SOURCE_URL } from '../lib/source.js';
 import {
   DEFAULT_SETTINGS,
   MAX_LABEL_LENGTH,
@@ -8,11 +8,13 @@ import {
   MAX_WATCHES,
   MAX_INTERVAL_MINUTES,
   MIN_INTERVAL_MINUTES,
+  WORDINGS,
   firstUnwatchedRegion,
   newWatchId,
   normalizeSettings,
+  wordingsInUse,
 } from '../lib/settings.js';
-import { formatTitle } from '../lib/title.js';
+import { formatWording } from '../lib/title.js';
 import { t } from '../lib/i18n.js';
 
 const language = document.getElementById('language');
@@ -23,12 +25,14 @@ const preview = document.getElementById('preview');
 const statusLine = document.getElementById('status');
 const resetButton = document.getElementById('reset');
 const sourceNote = document.getElementById('source-note');
+const mergeLevels = document.getElementById('merge-levels');
 
-const templateFields = {
-  [STATUS.ALERT]: document.getElementById('template-alert'),
-  [STATUS.CLEAR]: document.getElementById('template-clear'),
-  [STATUS.UNKNOWN]: document.getElementById('template-unknown'),
-};
+const templateFields = Object.fromEntries(
+  WORDINGS.map((wording) => [
+    wording,
+    document.getElementById(`template-${wording}`),
+  ]),
+);
 
 /** The last saved settings, so a redraw never has to read storage again. */
 let current = DEFAULT_SETTINGS;
@@ -112,10 +116,10 @@ const paintWatches = () => {
 const paintPreview = () => {
   const rows = current.watches.map((watch) => {
     const item = document.createElement('li');
-    for (const status of Object.values(STATUS)) {
+    for (const wording of wordingsInUse(current)) {
       const chip = document.createElement('span');
-      chip.className = `chip ${status}`;
-      chip.textContent = formatTitle(watch, status, current);
+      chip.className = `chip ${wording}`;
+      chip.textContent = formatWording(watch, wording, current);
       item.append(chip);
     }
     return item;
@@ -128,9 +132,13 @@ const paintForm = () => {
   interval.value = String(current.intervalMinutes);
   interval.min = String(MIN_INTERVAL_MINUTES);
   interval.max = String(MAX_INTERVAL_MINUTES);
-  for (const [status, field] of Object.entries(templateFields)) {
+  mergeLevels.checked = current.mergeLevels;
+  const inUse = wordingsInUse(current);
+  for (const [wording, field] of Object.entries(templateFields)) {
     field.maxLength = MAX_TEMPLATE_LENGTH;
-    field.value = current.templates[current.language][status];
+    field.value = current.templates[current.language][wording];
+    // Only the wordings a bookmark can show right now are worth editing.
+    field.closest('.field').hidden = !inUse.includes(wording);
   }
 };
 
@@ -159,12 +167,13 @@ const collect = () => {
     ...current,
     language: language.value,
     intervalMinutes: Number(interval.value),
+    mergeLevels: mergeLevels.checked,
     watches,
     templates: {
       ...current.templates,
       [shown]: Object.fromEntries(
-        Object.entries(templateFields).map(([status, field]) => [
-          status,
+        Object.entries(templateFields).map(([wording, field]) => [
+          wording,
           field.value,
         ]),
       ),
