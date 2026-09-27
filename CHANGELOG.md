@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased][unreleased]
 
+## [1.1.0][] - 2026-09-27
+
 ### Added
 
 - Yellow and red alerts. A switch on the options page, on by default, merges
@@ -63,6 +65,8 @@ First release. Firefox only.
 - This is a convenience, not a warning system.
 
 [unreleased]:
-  https://github.com/kvachikk/air-alerts-in-bookmarks/compare/v1.0.0...HEAD
+  https://github.com/kvachikk/air-alerts-in-bookmarks/compare/v1.1.0...HEAD
+[1.1.0]:
+  https://github.com/kvachikk/air-alerts-in-bookmarks/compare/v1.0.0...v1.1.0
 [1.0.0]:
   https://github.com/kvachikk/air-alerts-in-bookmarks/releases/tag/v1.0.0

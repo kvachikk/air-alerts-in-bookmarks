@@ -1,6 +1,6 @@
 {
   "name": "air-alerts-in-bookmarks",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "private": true,
   "type": "module",
   "description": "Keeps Ukrainian air raid alerts on the bookmarks bar, one bookmark per region",
